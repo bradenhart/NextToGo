@@ -81,33 +81,35 @@ class NextToGoViewModel(private val nextToGoRepository: NextToGoRepository) : Vi
         _launch()
     }
 
-//    fun onRaceExpired(raceId: String) {
-//        val currFilterState = filterState.value!!
-//
-//        // Update races to display
-//        var newRaces = races.value!!.toMutableList().map {
-//            Race(
-//                it.raceId,
-//                it.categoryId,
-//                it.raceCategory,
-//                it.meetingName,
-//                it.raceNumber,
-//                it.advertisedStart,
-//                categoryDisplayed =  if (it.raceCategory == racingCategory) state else it.categoryDisplayed,
-//                raceStarted = if (it.raceId == raceId) true else false
-//            )
-//        }
-//
-//        races.postValue(newRaces)
-//
-//        _launch()
-//    }
+    fun onRaceExpired() {
+        // Update races to display
+
+        val newRaces = _races.value!!.toMutableList().map {
+            val isRaceStarted = _isTimeExpired(it.advertisedStart)
+
+            Race(
+                it.raceId,
+                it.categoryId,
+                it.raceCategory,
+                it.meetingName,
+                it.raceNumber,
+                it.advertisedStart,
+                it.categoryDisplayed,
+                raceStarted = isRaceStarted
+            )
+        }.filter { !it.raceStarted }
+
+        _races.value = newRaces
+
+        _launch()
+    }
 
     private fun _launch() {
         viewModelScope.launch {
             try {
+                var filteredRaces = _races.value!!.filter { it.categoryDisplayed }
                 // On success, update the ui state to refresh the UI
-                nextToGoUiState = NextToGoUiState.Success(_races.value!!, _filterState.value!!)
+                nextToGoUiState = NextToGoUiState.Success(filteredRaces, _filterState.value!!)
             } catch (e: IOException) {
                 nextToGoUiState = NextToGoUiState.Error
             }
@@ -148,7 +150,7 @@ class NextToGoViewModel(private val nextToGoRepository: NextToGoRepository) : Vi
                 val nextToGo = nextToGoRepository.getNextToGo()
 
                 // Get a list of race summaries ordered by ascending advertised start time
-                var races = nextToGo.data.raceSummaries.values
+                val races = nextToGo.data.raceSummaries.values
                     .toList()
                     .map {
                         Race(
@@ -164,7 +166,6 @@ class NextToGoViewModel(private val nextToGoRepository: NextToGoRepository) : Vi
                     .filter {
                         !_isTimeExpired(it.advertisedStart)
                     }
-                    .subList(0, 5)
 
                 // Add all unfiltered races to state
                 _races.value = races

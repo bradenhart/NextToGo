@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -138,11 +140,10 @@ fun BasicCountdownTimer(raceId: String, time: Long, modifier: Modifier = Modifie
             delay(1000L)
             timeLeft--
 
-//            if (timeLeft <= -60) {
-////                nextToGoViewModel.onRaceExpired(raceId)
-////                nextToGoViewModel.getNextToGoRaces()
-//                break
-//            }
+            if (timeLeft <= -60) {
+                nextToGoViewModel.onRaceExpired()
+//                nextToGoViewModel.getNextToGoRaces()
+            }
         }
     }
 
@@ -209,13 +210,16 @@ fun RacesListScreen(
 ) {
     val maxSize = if (races.size < 5) races.size else 5
 
-    Column(
-        modifier = Modifier.fillMaxSize(),
-    ) {
-        races.subList(0, maxSize).forEach {
-            race -> if (!race.raceStarted || race.categoryDisplayed) RaceCard(race = race) else null
-        }
+    Column {
         NextToGoFilter(filterState = filterState)
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            items(items = races.subList(0, maxSize)) { race -> RaceCard(race = race) }
+        }
+
     }
+
+
 }
 
