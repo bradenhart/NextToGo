@@ -44,7 +44,7 @@ class NextToGoViewModel(private val nextToGoRepository: NextToGoRepository) : Vi
      * If all options are unchecked, reset the filter so that all options are checked.
      *
      */
-    fun onFilterStateChanged(racingCategory: RacingCategory, state: Boolean) {
+    fun onFilterStateChanged(racingCategory: RacingCategory, state: Boolean): Map<String,Boolean> {
         // Update the filter state
         val currFilterState = _filterState.value
         var newFilterState = if (currFilterState != null) currFilterState.toMutableMap() else mutableMapOf()
@@ -84,6 +84,8 @@ class NextToGoViewModel(private val nextToGoRepository: NextToGoRepository) : Vi
         _races.value = newRaces
 
         _launch()
+
+        return _filterState.value!!
     }
 
     /**
