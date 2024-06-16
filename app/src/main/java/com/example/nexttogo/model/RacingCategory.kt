@@ -2,6 +2,9 @@ package com.example.nexttogo.model
 
 import com.example.nexttogo.R
 
+/***
+ * The types of racing categories displayed in the app
+ */
 enum class RacingCategory(val id: String, val res: Int, val desc: String) {
 
     HORSE_RACING(

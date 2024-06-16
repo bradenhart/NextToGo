@@ -3,6 +3,9 @@ package com.example.nexttogo.model
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+/***
+ * A race summary object from an api response
+ */
 @Serializable
 data class RaceSummary(
     @SerialName(value = "race_id")

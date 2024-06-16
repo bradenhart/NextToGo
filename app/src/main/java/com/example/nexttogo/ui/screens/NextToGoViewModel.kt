@@ -26,19 +26,24 @@ sealed interface NextToGoUiState {
 
 class NextToGoViewModel(private val nextToGoRepository: NextToGoRepository) : ViewModel() {
 
-    val MAX_DISPLAY_SIZE = 5
-
     /** The mutable State that stores the status of the most recent request */
     var nextToGoUiState: NextToGoUiState by mutableStateOf(NextToGoUiState.Loading)
         private set
 
+    /** The state of the NextToGoFilter UI component */
     private val _filterState : MutableLiveData<Map<String,Boolean>> by lazy {
         MutableLiveData<Map<String,Boolean>>()
     }
+    /** The races to be displayed in the app */
     private val _races : MutableLiveData<List<Race>> by lazy {
         MutableLiveData<List<Race>>()
     }
 
+    /**
+     * When a filter option is checked/unchecked, update the filter state and races being displayed in the app.
+     * If all options are unchecked, reset the filter so that all options are checked.
+     *
+     */
     fun onFilterStateChanged(racingCategory: RacingCategory, state: Boolean) {
         // Update the filter state
         val currFilterState = _filterState.value
@@ -81,6 +86,11 @@ class NextToGoViewModel(private val nextToGoRepository: NextToGoRepository) : Vi
         _launch()
     }
 
+    /**
+     * When a race's countdown time reaches the expiry period (-60s) the list of races being displayed
+     * will be updated to remove it.
+     *
+     */
     fun onRaceExpired() {
         // Update races to display
 
@@ -104,6 +114,9 @@ class NextToGoViewModel(private val nextToGoRepository: NextToGoRepository) : Vi
         _launch()
     }
 
+    /**
+     * Utility to update the UI state.
+     */
     private fun _launch() {
         viewModelScope.launch {
             try {
@@ -121,6 +134,9 @@ class NextToGoViewModel(private val nextToGoRepository: NextToGoRepository) : Vi
         getNextToGoRaces()
     }
 
+    /**
+     * Utility to create the default state of the filter options (all categories checked).
+     */
     private fun _getDefaultFilterState() : MutableMap<String,Boolean> {
         return mutableMapOf(
             RacingCategory.HORSE_RACING.id to true,
@@ -129,21 +145,24 @@ class NextToGoViewModel(private val nextToGoRepository: NextToGoRepository) : Vi
         )
     }
 
+    /**
+     * Utility to check if the time has reached the expiry period (-60s).
+     */
     private fun _isTimeExpired(seconds: Long): Boolean {
         return seconds - Instant.now().epochSecond <= -60
     }
 
+    /**
+     * Utility to set the initial value of the _filterState variable.
+     */
     private fun _initFilterState() {
         _filterState.value = _getDefaultFilterState()
     }
 
-    private fun _getMaxRange(listSize: Int): Int {
-        return if (listSize < MAX_DISPLAY_SIZE) listSize else MAX_DISPLAY_SIZE
-    }
-
+    /**
+     * Gets the latest next to go races from the data repository and updates the UI.
+     */
     fun getNextToGoRaces() {
-        val filterState = _filterState.value!!
-
         viewModelScope.launch {
             try {
                 // Get the next to go races from the repository

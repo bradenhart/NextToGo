@@ -24,7 +24,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.nexttogo.R
@@ -35,6 +34,9 @@ import kotlinx.coroutines.delay
 import java.time.Instant
 import kotlin.math.abs
 
+/**
+ * Displays the main content of the app based on the state of the UI (Loading, Error, Success).
+ */
 @Composable
 fun HomeScreen(
     nextToGoUiState: NextToGoUiState,
@@ -51,6 +53,9 @@ fun HomeScreen(
     }
 }
 
+/**
+ * Displays the loading state of the app.
+ */
 @Composable
 fun LoadingScreen(modifier: Modifier = Modifier) {
     Image(
@@ -60,6 +65,9 @@ fun LoadingScreen(modifier: Modifier = Modifier) {
     )
 }
 
+/**
+ * Displays the error state of the app.
+ */
 @Composable
 fun ErrorScreen(modifier: Modifier = Modifier) {
     Column(
@@ -74,6 +82,9 @@ fun ErrorScreen(modifier: Modifier = Modifier) {
     }
 }
 
+/**
+ * Displays a race on screen.
+ */
 @Composable
 fun RaceCard(race: Race) {
     var iconRes: Int = (RacingCategory from race.categoryId)!!.res
@@ -104,7 +115,6 @@ fun RaceCard(race: Race) {
                 text = "${race.meetingName} R${race.raceNumber}"
             )
             BasicCountdownTimer(
-                raceId = race.raceId,
                 time = race.advertisedStart,
                 modifier = Modifier.align(Alignment.CenterVertically)
             )
@@ -112,29 +122,22 @@ fun RaceCard(race: Race) {
     }
 }
 
-@Preview
+/**
+ * Displays a countdown timer of time remaining.
+ */
 @Composable
-fun PreviewRaceCard() {
-    val race = Race(
-        raceId = "1",
-        categoryId = RacingCategory.GREYHOUND_RACING.id,
-        raceCategory = RacingCategory.GREYHOUND_RACING,
-        meetingName = "Prairie Meadows",
-        raceNumber = 1,
-        advertisedStart = 120L
-    )
-
-    RaceCard(race = race)
-}
-
-@Composable
-fun BasicCountdownTimer(raceId: String, time: Long, modifier: Modifier = Modifier) {
+fun BasicCountdownTimer(time: Long, modifier: Modifier = Modifier) {
     val nextToGoViewModel: NextToGoViewModel = viewModel(factory = NextToGoViewModel.Factory)
     val epochInstant = Instant.now().epochSecond
     val timeUntil =  time - epochInstant
 
     var timeLeft by remember { mutableStateOf(timeUntil) }
 
+    /**
+     * Updates the countdown timer every second.
+     * When the timer reaches -60s, the race has expired and the view model is updated.
+     *
+     */
     LaunchedEffect(key1 = timeLeft) {
         while (true) {
             delay(1000L)
@@ -142,7 +145,7 @@ fun BasicCountdownTimer(raceId: String, time: Long, modifier: Modifier = Modifie
 
             if (timeLeft <= -60) {
                 nextToGoViewModel.onRaceExpired()
-//                nextToGoViewModel.getNextToGoRaces()
+                timeLeft = time - Instant.now().epochSecond
             }
         }
     }
@@ -153,6 +156,9 @@ fun BasicCountdownTimer(raceId: String, time: Long, modifier: Modifier = Modifie
     )
 }
 
+/**
+ * Displays the content of a countdown timer.
+ */
 @Composable
 fun CountdownText(seconds: Long, modifier: Modifier = Modifier) {
     val formattedTime = getCountdownString(seconds.toInt())
@@ -163,14 +169,9 @@ fun CountdownText(seconds: Long, modifier: Modifier = Modifier) {
     )
 }
 
-@Preview
-@Composable
-fun PreviewCountdownText() {
-    val fakeTime = Instant.now().plusSeconds(60)
-
-    CountdownText(seconds = fakeTime.epochSecond)
-}
-
+/**
+ * Converts seconds to hours, minutes and seconds in a formatted string.
+ */
 fun getCountdownString(seconds: Int): String {
     val isNegative = seconds < 0
     var totalHours: Int
@@ -197,12 +198,9 @@ fun getCountdownString(seconds: Int): String {
     return if (isNegative) "-$countdownString" else countdownString
 }
 
-@Preview
-@Composable
-fun PreviewBasicCountdownTimer() {
-    BasicCountdownTimer(raceId = "1", time = 1L)
-}
-
+/**
+ * Displays a list of races and the filter to change which racing category are displayed.
+ */
 @Composable
 fun RacesListScreen(
     races: List<Race>,

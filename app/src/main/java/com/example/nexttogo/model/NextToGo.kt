@@ -3,6 +3,9 @@ package com.example.nexttogo.model
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+/**
+ * Models the response from the getNextToGo api service request
+ */
 @Serializable
 data class NextToGo(
     val status: Int,

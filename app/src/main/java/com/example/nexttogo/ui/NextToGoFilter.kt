@@ -16,12 +16,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.nexttogo.model.RacingCategory
 import com.example.nexttogo.ui.screens.NextToGoViewModel
 
+/**
+ * Displays the racing category filter options.
+ */
 @Composable()
 fun NextToGoFilter(filterState: Map<String,Boolean>) {
     Row(
@@ -34,14 +36,9 @@ fun NextToGoFilter(filterState: Map<String,Boolean>) {
     }
 }
 
-//@Preview
-//@Composable
-//fun PreviewNextToGoFilter() {
-//    val racingCategories = listOf(RacingCategory.HORSE_RACING, RacingCategory.HARNESS_RACING)
-//
-//    NextToGoFilter(racingCategories = racingCategories)
-//}
-
+/**
+ * Displays a racing category icon and checkbox for filtering races.
+ */
 @Composable
 fun FilterOption(racingCategory: RacingCategory, initState: Boolean = true) {
     val nextToGoViewModel: NextToGoViewModel = viewModel(factory = NextToGoViewModel.Factory)
@@ -66,10 +63,4 @@ fun FilterOption(racingCategory: RacingCategory, initState: Boolean = true) {
             modifier = Modifier.size(24.dp)
         )
     }
-}
-
-@Preview
-@Composable
-fun PreviewFilterOption() {
-    FilterOption(RacingCategory.HARNESS_RACING)
 }
