@@ -3,4 +3,8 @@
     <string name="placeholder_result">Found 10 races</string>
     <string name="loading">Loading</string>
     <string name="loading_failed">Failed to load</string>
+    <string name="horse_racing_category_desc">Horse Racing option</string>
+    <string name="greyhound_racing_category_desc">Greyhound Racing option</string>
+    <string name="harness_racing_category_desc">Harness Racing option</string>
+
 </resources>
